@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    restart: unless-stopped
+    container_name: postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: utente
+      POSTGRES_PASSWORD: progetto
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+          - postgres_network
+
+volumes:
+  postgres_data:
+
+networks:
+  postgres_network:
+    driver: bridge
