@@ -1,7 +1,6 @@
 package a.progettoutente.utility;
 
-import a.progettoutente.entity.Cap;
-import a.progettoutente.entity.Comune;
+import a.progettoutente.entity.*;
 import jakarta.annotation.PostConstruct;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -9,12 +8,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -41,6 +37,18 @@ public class DataInitializer {
         Long countComune = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM comune", Long.class);
         if (countComune == 0) {
             importComuneFromCsv();
+        }
+        Long countNazione = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM nazione", Long.class);
+        if (countNazione == 0) {
+            importNazioneFromCsv();
+        }
+        Long countProvincia = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM provincia", Long.class);
+        if (countProvincia == 0) {
+            importProvinciaFromCsv();
+        }
+        Long countRegione = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM regione", Long.class);
+        if (countRegione == 0) {
+            importRegioneFromCsv();
         }
     }
 
@@ -101,6 +109,102 @@ public class DataInitializer {
                 @Override
                 public int getBatchSize() {
                     return comuneList.size();
+                }
+            });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void importNazioneFromCsv() {
+        List<Nazione> nazioneList = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/static/gi_nazioni.csv"))) {
+            String line;
+            br.readLine();
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(";");
+                nazioneList.add(new Nazione(values[0], values[1], values[2], values[3]));
+            }
+            String sql = "INSERT INTO nazione (sigla_nazione,codice_belfiore,denominazione_nazione,denominazione_cittadinanza) VALUES (?,?,?,?)";
+            jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                    ps.setString(1, nazioneList.get(i).getSiglaNazione());
+                    ps.setString(2, nazioneList.get(i).getCodiceBelfiore());
+                    ps.setString(3, nazioneList.get(i).getDenominazioneNazione());
+                    ps.setString(4, nazioneList.get(i).getDenominazioneCittadinanza());
+
+                }
+
+                @Override
+                public int getBatchSize() {
+                    return nazioneList.size();
+                }
+            });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void importProvinciaFromCsv() {
+        List<Provincia> provinciaList = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/static/gi_province.csv"))) {
+            String line;
+            br.readLine();
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(";");
+                provinciaList.add(new Provincia(values[0], values[1], values[2], values[3],values[4], values[5].replace(",", "."), values[6]));
+            }
+            String sql = "INSERT INTO provincia (codice_regione,sigla_provincia,denominazione_provincia,tipologia_provincia,numero_comuni,superficie_kmq,codice_sovracomunale) VALUES (?,?,?,?,?,?,?)";
+            jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                    ps.setInt(1, provinciaList.get(i).getCodiceRegione());
+                    ps.setString(2, provinciaList.get(i).getSiglaProvincia());
+                    ps.setString(3, provinciaList.get(i).getDenominazioneProvincia());
+                    ps.setString(4, provinciaList.get(i).getTipologiaProvincia());
+                    ps.setInt(5, provinciaList.get(i).getNumeroComuni());
+                    ps.setBigDecimal(6, provinciaList.get(i).getSuperficieKmq());
+                    ps.setInt(7, provinciaList.get(i).getCodiceSovracomunale());
+
+                }
+
+                @Override
+                public int getBatchSize() {
+                    return provinciaList.size();
+                }
+            });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void importRegioneFromCsv() {
+        List<Regione> regioneList = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/static/gi_regioni.csv"))) {
+            String line;
+            br.readLine();
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(";");
+                regioneList.add(new Regione(values[0], values[1], values[2], values[3],values[4], values[5], values[6].replace(",", ".")));
+            }
+            String sql = "INSERT INTO regione (ripartizione_geografica,codice_regione,denominazione_regione,tipologia_regione,numero_province,numero_comuni,superficie_kmq) VALUES (?,?,?,?,?,?,?)";
+            jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                    ps.setString(1, regioneList.get(i).getRipartizioneGeografica());
+                    ps.setInt(2, regioneList.get(i).getCodiceRegione());
+                    ps.setString(3, regioneList.get(i).getDenominazioneRegione());
+                    ps.setString(4, regioneList.get(i).getTipologiaRegione());
+                    ps.setInt(5, regioneList.get(i).getNumeroProvince());
+                    ps.setInt(6, regioneList.get(i).getNumeroComuni());
+                    ps.setBigDecimal(7, regioneList.get(i).getSuperficieKmq());
+
+                }
+
+                @Override
+                public int getBatchSize() {
+                    return regioneList.size();
                 }
             });
         } catch (Exception e) {
