@@ -14,7 +14,12 @@ public class UtenteDto {
     private String dataDiNascita;
     private boolean attivo;
 
+    public UtenteDto() {
+        this.attivo= true;
+    }
+
     private List<IndirizzoDto> indirizzi;
     private EmailDto email;
     private TelefonoDto telefono;
+    private RuoloDto ruolo;
 }

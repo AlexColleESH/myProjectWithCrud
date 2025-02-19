@@ -1,5 +1,6 @@
 package a.progettoutente.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,5 +35,9 @@ public class Utente {
     @OneToOne (cascade = CascadeType.ALL)
     @JoinColumn(name = "fk_telefono", referencedColumnName = "idTelefono")
     private Telefono telefono;
+
+    @ManyToOne
+    @JoinColumn(name = "fkRuolo", referencedColumnName = "idRuolo")
+    private Ruolo ruolo;
 
 }

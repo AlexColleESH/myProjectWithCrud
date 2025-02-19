@@ -13,7 +13,6 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface IndirizzoMapper {
 
-    @Mapping(target = "utente", ignore = true)
     Indirizzo toEntity(IndirizzoDto indirizzoDto);
 
     @Mapping(target = "utente", ignore = true)

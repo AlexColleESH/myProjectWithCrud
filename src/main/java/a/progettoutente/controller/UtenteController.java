@@ -4,6 +4,7 @@ import a.progettoutente.dto.UtenteDto;
 import a.progettoutente.service.UtenteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,12 +31,14 @@ public class UtenteController {
     }
 
     @PutMapping("/update-user")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN', 'ROLE_ADMIN', 'ROLE_USER')")
     public ResponseEntity<UtenteDto> updateUser(@RequestBody UtenteDto utenteDto) {
         utenteService.modificaUtente(utenteDto);
         return new ResponseEntity<>(utenteDto, HttpStatus.OK);
     }
 
     @GetMapping("/get-user/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
         if (id == null) {
             return new ResponseEntity<>("Inserire id", HttpStatus.BAD_REQUEST);
@@ -45,6 +48,7 @@ public class UtenteController {
     }
 
     @GetMapping("/get-user-by-nome/{nome}")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<?> getUserByNome(@PathVariable String nome) {
         List<UtenteDto> nomeUtenteDtoList = utenteService.getUtenteByNome(nome);
         if (nomeUtenteDtoList == null || nomeUtenteDtoList.isEmpty()) {
@@ -54,6 +58,7 @@ public class UtenteController {
     }
 
     @GetMapping("/get-user-by-cognome/{cognome}")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<?> getUserByCognome(@PathVariable String cognome) {
         List<UtenteDto> cognomeUtenteDtoList = utenteService.getUtenteByCognome(cognome);
         if (cognomeUtenteDtoList == null || cognomeUtenteDtoList.isEmpty()) {
@@ -63,6 +68,7 @@ public class UtenteController {
     }
 
     @GetMapping("/get-all-users")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     public ResponseEntity<?> getAllUsers() {
         List<UtenteDto> utenteDtoList = utenteService.getAllUtenti();
         if (utenteDtoList == null || utenteDtoList.isEmpty()) {
@@ -72,6 +78,7 @@ public class UtenteController {
     }
 
     @DeleteMapping("/delete-user/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
         utenteService.eliminaUtente(id);
         return new ResponseEntity<>("Utente eliminato con successo", HttpStatus.OK);

@@ -28,4 +28,6 @@ public interface UtenteService {
     void deleteTelefono(Telefono idTelefono);
 
     List<UtenteDto> getUtenteByCognome(String cognome);
+
+    UtenteDto findByUsername(String username);
 }

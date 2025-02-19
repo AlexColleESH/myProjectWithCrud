@@ -4,6 +4,7 @@ import a.progettoutente.dto.TelefonoDto;
 import a.progettoutente.service.TelefonoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,12 +21,14 @@ public class TelefonoController {
     }
 
     @PutMapping("/update-telephone")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN', 'ROLE_ADMIN', 'ROLE_USER')")
     ResponseEntity<TelefonoDto> updateTelephone (@RequestBody TelefonoDto telefonoDto) {
         telefonoService.updateTelephoneDto(telefonoDto);
         return new ResponseEntity<>(telefonoDto, HttpStatus.OK);
     }
 
     @GetMapping("/get-telephone/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN', 'ROLE_ADMIN')")
     ResponseEntity<?> getTelefono (@PathVariable Long id) {
         if (id == null) {
             return new ResponseEntity<>("id non valido", HttpStatus.BAD_REQUEST);
@@ -35,6 +38,7 @@ public class TelefonoController {
     }
 
     @GetMapping("/get-telephone-by-telephone-number/{numeroTelefono}")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN', 'ROLE_ADMIN')")
     ResponseEntity<?> getTelefonoByNumeroTelefono (@PathVariable String numeroTelefono) {
         if (numeroTelefono == null) {
             return new ResponseEntity<>("numero telefono non valido", HttpStatus.BAD_REQUEST);
@@ -47,6 +51,7 @@ public class TelefonoController {
     }
 
     @GetMapping("/get-all-telephones")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     ResponseEntity<?> getAllTelefoni() {
         List<TelefonoDto> telefonoDtoList = telefonoService.findAllTelephones();
         if (telefonoDtoList == null || telefonoDtoList.isEmpty()) {
@@ -56,6 +61,7 @@ public class TelefonoController {
     }
 
     @PutMapping("/delete-telephone/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<?> deleteTelefono (@PathVariable Long id) {
         if (id == null) {
             return new ResponseEntity<>("id non valido", HttpStatus.BAD_REQUEST);

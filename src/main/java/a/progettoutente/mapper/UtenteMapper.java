@@ -4,17 +4,23 @@ import a.progettoutente.dto.UtenteDto;
 import a.progettoutente.entity.Utente;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {EmailMapper.class, IndirizzoMapper.class, TelefonoMapper.class})
-public interface UtenteMapper {
+@Mapper(componentModel = "spring", uses = {EmailMapper.class, IndirizzoMapper.class, TelefonoMapper.class, RuoloMapper.class,})
+public abstract class UtenteMapper {
 
-    Utente toEntity(UtenteDto utenteDto);
+    @Autowired
+    protected BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    UtenteDto toDto(Utente utente);
+    @Mapping(target = "password", expression = "java(bCryptPasswordEncoder.encode(utenteDto.getPassword()))")
+    public abstract Utente toEntity(UtenteDto utenteDto);
 
-    List<Utente> toEntityList(List<UtenteDto> dtoList);
+    public abstract UtenteDto toDto(Utente utente);
 
-    List<UtenteDto> toDtoList(List<Utente> entityList);
+    public abstract List<Utente> toEntityList(List<UtenteDto> dtoList);
+
+    public abstract List<UtenteDto> toDtoList(List<Utente> entityList);
 }

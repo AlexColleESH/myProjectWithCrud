@@ -4,6 +4,7 @@ import a.progettoutente.dto.EmailDto;
 import a.progettoutente.service.EmailService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class EmailController {
     }
 
     @PutMapping("/update-email")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN', 'ROLE_ADMIN','ROLE_USER')")
     ResponseEntity<?> updateEmail (@RequestBody EmailDto emailDto){
         if (emailDto.getIdEmail() == null) {
             return new ResponseEntity<>("Id non valido", HttpStatus.BAD_REQUEST);
@@ -28,6 +30,7 @@ public class EmailController {
     }
 
     @GetMapping("/get-email/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<?> getEmail (@PathVariable Long id) {
         if (id == null) {
             return new ResponseEntity<>("Id non valido", HttpStatus.BAD_REQUEST);
@@ -37,6 +40,7 @@ public class EmailController {
     }
 
     @GetMapping("/get-email-by-indirizzo-email/{indirizzoEmail}")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<?> getEmailByIndirizzoEmail (@PathVariable String indirizzoEmail) {
         if(indirizzoEmail == null) {
             return new ResponseEntity<>("Indirizzo email non valido", HttpStatus.BAD_REQUEST);
@@ -49,6 +53,7 @@ public class EmailController {
     }
 
     @GetMapping("/get-emails-list")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     public ResponseEntity<?> getEmailsList () {
         List<EmailDto> emailsDtoList = emailService.getAllEmails();
         if (emailsDtoList == null || emailsDtoList.isEmpty()) {
@@ -58,6 +63,7 @@ public class EmailController {
     }
 
     @DeleteMapping("/delete-email/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<?> deleteEmail (@PathVariable Long id) {
         emailService.deleteEmail(id);
         return new ResponseEntity<>("Email eliminata con successo", HttpStatus.OK);

@@ -11,6 +11,7 @@ import a.progettoutente.service.IndirizzoService;
 import a.progettoutente.service.UtenteService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,10 +33,11 @@ public class UtenteServiceImpl implements UtenteService {
     @Override
     public void creaUtente(UtenteDto utenteDto) {
         EmailDto emailDto = emailService.getEmailByIndirizzoEmail(utenteDto.getEmail().getIndirizzoEmail());
-        if(emailDto == null) {
+        boolean exists = utenteRepository.existsByUsername(utenteDto.getUsername());
+        if(emailDto == null && !exists) {
             utenteRepository.save(utenteMapper.toEntity(utenteDto));
         } else {
-            throw new IllegalArgumentException("indirizzo email già esistente");
+            throw new IllegalArgumentException("Lo username o l'indirizzo email sono già presenti");
         }
     }
 
@@ -75,6 +77,11 @@ public class UtenteServiceImpl implements UtenteService {
         return utenteMapper.toDtoList(utenteRepository.findByCognome(cognome));
     }
 
+    @Override
+    public UtenteDto findByUsername(String username) {
+        return utenteMapper.toDto(utenteRepository.findByUsername(username));
+    }
+
 
     @Override
     public void eliminaUtente(Long id) {
@@ -97,5 +104,4 @@ public class UtenteServiceImpl implements UtenteService {
         utente.setTelefono(null);
         utenteRepository.save(utente);
     }
-
 }
