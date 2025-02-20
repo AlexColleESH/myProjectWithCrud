@@ -24,4 +24,6 @@ public class ProvinciaDto {
     private BigDecimal superficieKmq;
 
     private Integer codiceSovracomunale;
+
+    private IndirizzoDto indirizzoDto;
 }

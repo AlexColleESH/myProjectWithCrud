@@ -9,4 +9,5 @@ public class CapDto {
 
     private String codiceIstat;
     private String cap;
+    private IndirizzoDto indirizzoDto;
 }

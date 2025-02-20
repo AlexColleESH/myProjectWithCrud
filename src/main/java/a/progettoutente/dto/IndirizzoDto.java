@@ -9,9 +9,9 @@ public class IndirizzoDto {
     private Long idIndirizzo;
     private String via;
     private Integer civico;
-    private Integer cap;
+    private CapDto cap;
     private String citta;
-    private String provincia;
+    private ProvinciaDto provincia;
     private Indirizzo.TipoIndirizzo tipoIndirizzo;
     private Utente utente;
 }

@@ -1,15 +1,15 @@
 package a.progettoutente.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
+@Table(name = "nazione")
 @Setter
 @Getter
 @AllArgsConstructor
@@ -22,6 +22,7 @@ public class Nazione {
 
     private String siglaNazione;
 
+    @Column(name = "codice_belfiore", unique = true)
     private String codiceBelfiore;
 
     private String denominazioneNazione;
@@ -33,5 +34,9 @@ public class Nazione {
         this.codiceBelfiore = value1;
         this.denominazioneNazione = value2;
         this.denominazioneCittadinanza = value3;
+    }
+
+    public Nazione(String value6) {
+        this.codiceBelfiore = value6;
     }
 }

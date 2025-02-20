@@ -7,20 +7,20 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
+@Table(name = "regione")
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Regione {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     private String ripartizioneGeografica;
 
+    @Id
+    @Column(name = "codice_regione")
     private Integer codiceRegione;
 
     private String denominazioneRegione;
@@ -43,4 +43,12 @@ public class Regione {
         this.numeroComuni = Integer.parseInt(value5);
         this.superficieKmq = new BigDecimal(value6);
     }
+
+    public Regione(String value) {
+        this.codiceRegione = Integer.parseInt(value);
+    }
+
+    @OneToMany(mappedBy = "regione")
+    private List<Provincia> province;
+
 }

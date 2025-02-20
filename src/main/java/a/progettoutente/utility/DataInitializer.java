@@ -30,26 +30,29 @@ public class DataInitializer {
             jdbcTemplate.execute("INSERT INTO ruolo (id_ruolo, ruolo) VALUES (2, 'ROLE_ADMIN');");
             jdbcTemplate.execute("INSERT INTO ruolo (id_ruolo, ruolo) VALUES (3, 'ROLE_USER');");
         }
-        Long countCap = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM cap", Long.class);
-        if (countCap == 0) {
-            importCapFromCsv();
-        }
-        Long countComune = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM comune", Long.class);
-        if (countComune == 0) {
-            importComuneFromCsv();
-        }
         Long countNazione = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM nazione", Long.class);
         if (countNazione == 0) {
             importNazioneFromCsv();
-        }
-        Long countProvincia = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM provincia", Long.class);
-        if (countProvincia == 0) {
-            importProvinciaFromCsv();
         }
         Long countRegione = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM regione", Long.class);
         if (countRegione == 0) {
             importRegioneFromCsv();
         }
+        Long countProvincia = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM provincia", Long.class);
+        if (countProvincia == 0) {
+            importProvinciaFromCsv();
+        }
+        Long countComune = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM comune", Long.class);
+        if (countComune == 0) {
+            importComuneFromCsv();
+        }
+        Long countCap = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM cap", Long.class);
+        if (countCap == 0) {
+            importCapFromCsv();
+        }
+
+
+
     }
 
     private void importCapFromCsv() {
@@ -61,11 +64,11 @@ public class DataInitializer {
                 String[] values = line.split(";");
                 capList.add(new Cap(values[0], values[1]));
             }
-            String sql = "INSERT INTO cap (codice_istat, cap) VALUES (?,?)";
+            String sql = "INSERT INTO cap (fk_codice_istat, cap) VALUES (?,?)";
             jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
                 @Override
                 public void setValues(PreparedStatement ps, int i) throws SQLException {
-                    ps.setString(1, capList.get(i).getCodiceIstat());
+                    ps.setString(1, capList.get(i).getComune().getCodiceIstat());
                     ps.setString(2, capList.get(i).getCap());
                 }
 
@@ -88,7 +91,7 @@ public class DataInitializer {
                 String[] values = line.split(";");
                 comuneList.add(new Comune(values[0], values[1], values[2], values[3], values[4], values[5], values[6], values[7].replace(",", "."), values[8].replace(",", "."), values[9].replace(",", "."), values[10]));
             }
-            String sql = "INSERT INTO comune (sigla_provincia,codice_istat,denominazione_ita_altra,denominazione_ita,denominazione_altra,flag_capoluogo,codice_belfiore,lat,lon,superficie_kmq,codice_sovracomunale) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+            String sql = "INSERT INTO comune (sigla_provincia,codice_istat,denominazione_ita_altra,denominazione_ita,denominazione_altra,flag_capoluogo,codice_belfiore,lat,lon,superficie_kmq,fk_codice_sovracomunale) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
             jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
                 @Override
                 public void setValues(PreparedStatement ps, int i) throws SQLException {
@@ -102,7 +105,7 @@ public class DataInitializer {
                     ps.setBigDecimal(8, comuneList.get(i).getLat());
                     ps.setBigDecimal(9, comuneList.get(i).getLon());
                     ps.setBigDecimal(10, comuneList.get(i).getSuperficieKmq());
-                    ps.setInt(11, comuneList.get(i).getCodiceSovracomunale());
+                    ps.setInt(11, comuneList.get(i).getProvincia().getCodiceSovracomunale());
 
                 }
 
@@ -155,11 +158,11 @@ public class DataInitializer {
                 String[] values = line.split(";");
                 provinciaList.add(new Provincia(values[0], values[1], values[2], values[3],values[4], values[5].replace(",", "."), values[6]));
             }
-            String sql = "INSERT INTO provincia (codice_regione,sigla_provincia,denominazione_provincia,tipologia_provincia,numero_comuni,superficie_kmq,codice_sovracomunale) VALUES (?,?,?,?,?,?,?)";
+            String sql = "INSERT INTO provincia (fk_codice_regione,sigla_provincia,denominazione_provincia,tipologia_provincia,numero_comuni,superficie_kmq,codice_sovracomunale) VALUES (?,?,?,?,?,?,?)";
             jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
                 @Override
                 public void setValues(PreparedStatement ps, int i) throws SQLException {
-                    ps.setInt(1, provinciaList.get(i).getCodiceRegione());
+                    ps.setInt(1, provinciaList.get(i).getRegione().getCodiceRegione());
                     ps.setString(2, provinciaList.get(i).getSiglaProvincia());
                     ps.setString(3, provinciaList.get(i).getDenominazioneProvincia());
                     ps.setString(4, provinciaList.get(i).getTipologiaProvincia());

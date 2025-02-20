@@ -1,6 +1,5 @@
 package a.progettoutente.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,9 +17,13 @@ public class Indirizzo {
     private Long idIndirizzo;
     private String via;
     private Integer civico;
-    private Integer cap;
+    @OneToOne
+    @JoinColumn(name = "fk_cap", referencedColumnName = "idCap")
+    private Cap cap;
     private String citta;
-    private String provincia;
+    @OneToOne
+    @JoinColumn(name = "fk_provincia", referencedColumnName = "idProvincia")
+    private Provincia provincia;
 
     @Enumerated(EnumType.STRING)
     private TipoIndirizzo tipoIndirizzo;

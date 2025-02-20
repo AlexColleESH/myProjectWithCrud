@@ -9,8 +9,10 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.DecimalMax;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
+@Table(name = "comune", uniqueConstraints = {@UniqueConstraint(columnNames = {"codice_istat"})})
 @Getter
 @Setter
 @AllArgsConstructor
@@ -23,6 +25,7 @@ public class Comune {
 
     private String siglaProvincia;
 
+    @Column(name = "codice_istat", unique = true)
     private String codiceIstat;
 
     private String denominazioneItaAltra;
@@ -48,7 +51,9 @@ public class Comune {
     @Column(precision = 12, scale = 4)
     private BigDecimal superficieKmq;
 
-    private Integer codiceSovracomunale;
+    @ManyToOne
+    @JoinColumn(name = "fk_codice_sovracomunale", referencedColumnName = "codice_sovracomunale")
+    private Provincia provincia;
 
 
     public Comune(String value, String value1, String value2, String value3, String value4, String value5, String value6, String value7, String value8, String value9, String value10) {
@@ -62,6 +67,15 @@ public class Comune {
         this.lat = new BigDecimal(value7);
         this.lon = new BigDecimal(value8);
         this.superficieKmq = new BigDecimal(value9);
-        this.codiceSovracomunale = Integer.parseInt(value10);
+        this.provincia = new Provincia(value10);
     }
+
+    public static Comune fromCodiceIstat(String value) {
+        Comune comune = new Comune();
+        comune.setCodiceIstat(value);
+        return comune;
+    }
+
+    @OneToMany(mappedBy = "comune")
+    private List<Cap> capList;
 }

@@ -2,7 +2,9 @@ package a.progettoutente.service.impl;
 
 import a.progettoutente.dto.IndirizzoDto;
 import a.progettoutente.entity.Indirizzo;
+import a.progettoutente.mapper.CapMapper;
 import a.progettoutente.mapper.IndirizzoMapper;
+import a.progettoutente.mapper.ProvinciaMapper;
 import a.progettoutente.repository.IndirizzoRepository;
 import a.progettoutente.service.IndirizzoService;
 import org.springframework.stereotype.Service;
@@ -15,10 +17,14 @@ public class IndirizzoServiceImpl implements IndirizzoService {
 
     private final IndirizzoRepository indirizzoRepository;
     private final IndirizzoMapper indirizzoMapper;
+    private final CapMapper capMapper;
+    private final ProvinciaMapper provinciaMapper;
 
-    public IndirizzoServiceImpl(IndirizzoRepository indirizzoRepository, IndirizzoMapper indirizzoMapper) {
+    public IndirizzoServiceImpl(IndirizzoRepository indirizzoRepository, IndirizzoMapper indirizzoMapper, CapMapper capMapper, ProvinciaMapper provinciaMapper) {
         this.indirizzoRepository = indirizzoRepository;
         this.indirizzoMapper = indirizzoMapper;
+        this.capMapper = capMapper;
+        this.provinciaMapper = provinciaMapper;
     }
 
     @Override
@@ -31,9 +37,9 @@ public class IndirizzoServiceImpl implements IndirizzoService {
             Indirizzo indirizzo = indirizzoOptional.get();
             indirizzo.setVia(indirizzoDto.getVia());
             indirizzo.setCivico(indirizzoDto.getCivico());
-            indirizzo.setCap(indirizzoDto.getCap());
+            indirizzo.setCap(capMapper.toEntity(indirizzoDto.getCap()));
             indirizzo.setCitta(indirizzoDto.getCitta());
-            indirizzo.setProvincia(indirizzoDto.getProvincia());
+            indirizzo.setProvincia(provinciaMapper.toEntity(indirizzoDto.getProvincia()));
             indirizzo.setTipoIndirizzo(Indirizzo.TipoIndirizzo.RESIDENZA);
             indirizzoRepository.save(indirizzo);
         }
