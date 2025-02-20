@@ -52,8 +52,8 @@ public class Provincia {
         this.codiceSovracomunale = Integer.parseInt(value6);
     }
 
-    @OneToOne(mappedBy = "provincia")
-    private Indirizzo indirizzo;
+    @OneToMany(mappedBy = "provincia")
+    private List<Indirizzo> indirizzi;
 
     public Provincia(String value10) {
         this.codiceSovracomunale= Integer.parseInt(value10);

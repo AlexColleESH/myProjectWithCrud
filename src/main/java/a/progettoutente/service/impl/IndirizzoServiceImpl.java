@@ -37,7 +37,7 @@ public class IndirizzoServiceImpl implements IndirizzoService {
             Indirizzo indirizzo = indirizzoOptional.get();
             indirizzo.setVia(indirizzoDto.getVia());
             indirizzo.setCivico(indirizzoDto.getCivico());
-            indirizzo.setCap(capMapper.toEntity(indirizzoDto.getCap()));
+            indirizzo.setCap(indirizzoDto.getCap());
             indirizzo.setCitta(indirizzoDto.getCitta());
             indirizzo.setProvincia(provinciaMapper.toEntity(indirizzoDto.getProvincia()));
             indirizzo.setTipoIndirizzo(Indirizzo.TipoIndirizzo.RESIDENZA);

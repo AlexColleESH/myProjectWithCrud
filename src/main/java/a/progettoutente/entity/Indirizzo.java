@@ -17,11 +17,9 @@ public class Indirizzo {
     private Long idIndirizzo;
     private String via;
     private Integer civico;
-    @OneToOne
-    @JoinColumn(name = "fk_cap", referencedColumnName = "idCap")
-    private Cap cap;
+    private Integer cap;
     private String citta;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "fk_provincia", referencedColumnName = "idProvincia")
     private Provincia provincia;
 

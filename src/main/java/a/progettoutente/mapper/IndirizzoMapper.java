@@ -5,6 +5,7 @@ import a.progettoutente.entity.Cap;
 import a.progettoutente.entity.Indirizzo;
 import a.progettoutente.entity.Provincia;
 import a.progettoutente.entity.Utente;
+import a.progettoutente.repository.ProvinciaRepository;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -21,6 +22,9 @@ public abstract class IndirizzoMapper {
     @Autowired
     protected JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    protected ProvinciaRepository provinciaRepository;
+
     public abstract Indirizzo toEntity(IndirizzoDto indirizzoDto);
 
     @Mapping(target = "utente", ignore = true)
@@ -32,10 +36,9 @@ public abstract class IndirizzoMapper {
 
     protected Map<String, Object> getIdCapAndIdProvincia(String citta) {
         String sql = """
-        SELECT p.id_provincia, array_agg(ca.id_cap) as cap_ids
+        SELECT p.id_provincia
         FROM comune c
         JOIN provincia p ON c.fk_codice_sovracomunale = p.codice_sovracomunale
-        JOIN cap ca ON c.codice_istat = ca.fk_codice_istat
         WHERE c.denominazione_ita = ?
         GROUP BY p.id_provincia
         """;
@@ -50,22 +53,16 @@ public abstract class IndirizzoMapper {
         }
     }
 
+
     @AfterMapping
     public void setForeignKeys(IndirizzoDto dto, @MappingTarget Indirizzo indirizzo) {
         Map<String, Object> result = getIdCapAndIdProvincia(dto.getCitta());
         if(result != null) {
-            // Recupera gli ID come Number, così da gestire eventuali Integer/Long
-            Number idCapNumber = (Number) result.get("id_cap");
             Number idProvinciaNumber = (Number) result.get("id_provincia");
+            Long provinciaId = idProvinciaNumber.longValue();
 
-            // Crea l'oggetto Cap e assegna l'id
-            Cap cap = new Cap();
-            cap.setIdCap(idCapNumber.longValue());
-            indirizzo.setCap(cap);
-
-            // Crea l'oggetto Provincia e assegna l'id
-            Provincia provincia = new Provincia();
-            provincia.setIdProvincia(idProvinciaNumber.longValue());
+            Provincia provincia = provinciaRepository.findById(provinciaId)
+                    .orElseThrow(() -> new RuntimeException("Provincia non trovata con id: " + provinciaId));
             indirizzo.setProvincia(provincia);
         }
     }
