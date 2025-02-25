@@ -10,4 +10,5 @@ import java.util.List;
 public interface IndirizzoRepository extends JpaRepository<Indirizzo, Long> {
     List<Indirizzo> findByVia(String via);
 
+    List<Indirizzo> findByCitta(String citta);
 }

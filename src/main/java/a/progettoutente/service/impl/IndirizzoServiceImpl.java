@@ -59,13 +59,27 @@ public class IndirizzoServiceImpl implements IndirizzoService {
     public void deleteIndirizzoById(Long id) {
         if  (id != null && indirizzoRepository.findById(id).isPresent()) {
             indirizzoRepository.deleteById(id);
+        } else {
+            throw new IllegalArgumentException("Indirizzo non trovato");
         }
-        throw new IllegalArgumentException("Indirizzo non trovato");
     }
 
     @Override
     public List<IndirizzoDto> getAllIndirizzi() {
         return indirizzoMapper.toDtoList(indirizzoRepository.findAll());
     }
+
+    @Override
+    public List<IndirizzoDto> getCitta(String citta) {
+        if (citta == null || citta.trim().isEmpty()) {
+            throw new IllegalArgumentException("Città non specificata");
+        }
+        List<Indirizzo> indirizzoList = indirizzoRepository.findByCitta(citta);
+        if (indirizzoList == null || indirizzoList.isEmpty()) {
+            throw new IllegalArgumentException("Nessun indirizzo trovato per la città: " + citta);
+        }
+        return indirizzoMapper.toDtoList(indirizzoList);
+    }
+
 
 }

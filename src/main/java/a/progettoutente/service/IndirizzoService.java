@@ -20,4 +20,6 @@ public interface IndirizzoService {
 
     List<IndirizzoDto> getAllIndirizzi ();
 
+    List<IndirizzoDto> getCitta (String citta);
+
 }

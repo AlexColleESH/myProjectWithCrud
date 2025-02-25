@@ -60,4 +60,14 @@ public class IndirizzoController {
         indirizzoService.deleteIndirizzoById(id);
         return new ResponseEntity<>("Indirizzo eliminato con successo", HttpStatus.OK);
     }
+
+    @GetMapping("/get-address-by-city")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN', 'ROLE_ADMIN')")
+    public ResponseEntity<?> findByCitta (@RequestParam String citta) {
+        List<IndirizzoDto> indirizzoDtoList = indirizzoService.getCitta(citta);
+        if (indirizzoDtoList == null || indirizzoDtoList.isEmpty()) {
+            return new ResponseEntity<>("Nessun indirizzo presente per la città specificata", HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(indirizzoDtoList, HttpStatus.OK);
+    }
 }
