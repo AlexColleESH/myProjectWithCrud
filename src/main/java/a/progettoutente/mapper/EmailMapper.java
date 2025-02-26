@@ -2,11 +2,8 @@ package a.progettoutente.mapper;
 
 import a.progettoutente.dto.EmailDto;
 import a.progettoutente.entity.Email;
-import a.progettoutente.entity.Utente;
-import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 
 import java.util.List;
 

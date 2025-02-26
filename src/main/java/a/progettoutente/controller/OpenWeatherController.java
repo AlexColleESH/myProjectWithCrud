@@ -1,8 +1,8 @@
 package a.progettoutente.controller;
 
-import a.progettoutente.dto.IndirizzoDto;
 import a.progettoutente.dto.OpenWeatherDto;
-import a.progettoutente.service.IndirizzoService;
+import a.progettoutente.dto.OpenWeatherItalianTranslationDto;
+import a.progettoutente.mapper.OpenWeatherMapper;
 import a.progettoutente.service.OpenWeatherService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,35 +10,29 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 public class OpenWeatherController {
 
     private final OpenWeatherService openWeatherService;
-    private final IndirizzoService indirizzoService;
+    private final OpenWeatherMapper openWeatherMapper;
 
-    public OpenWeatherController(OpenWeatherService openWeatherService, IndirizzoService indirizzoService) {
+    public OpenWeatherController(OpenWeatherService openWeatherService, OpenWeatherMapper openWeatherMapper) {
         this.openWeatherService = openWeatherService;
-        this.indirizzoService = indirizzoService;
+        this.openWeatherMapper = openWeatherMapper;
     }
 
 
     @GetMapping("/weather")
-    public ResponseEntity<OpenWeatherDto> getWeather(@RequestParam String citta) {
+    public ResponseEntity<?> getWeather(@RequestParam String citta) {
         try {
-            List<IndirizzoDto> indirizzi = indirizzoService.getCitta(citta);
-            if (indirizzi.isEmpty()) {
+            if (citta == null || citta.isEmpty()) {
                 throw new IllegalArgumentException("Nessun indirizzo trovato per la città: " + citta);
             }
-
             OpenWeatherDto weather = openWeatherService.getWeatherByCity(citta);
-            return ResponseEntity.ok(weather);
+            OpenWeatherItalianTranslationDto weatherTranslation = openWeatherMapper.toItalianOpenWeather(weather);
+            return ResponseEntity.ok(weatherTranslation);
         } catch (Exception e) {
-            OpenWeatherDto errorDto = new OpenWeatherDto();
-            errorDto.setCityName("Errore");
-            errorDto.setWeatherDescription(e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
+            return new ResponseEntity<>("città non presente nel database", HttpStatus.BAD_REQUEST);
         }
     }
 

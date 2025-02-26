@@ -1,5 +1,6 @@
 package a.progettoutente.service;
 
+import a.progettoutente.dto.ComuneDto;
 import a.progettoutente.dto.OpenWeatherDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -17,12 +18,14 @@ public class OpenWeatherService {
     private final String apiKey;
     private final String units;
     private final String lang;
+    private final ComuneService comuneService;
 
     public OpenWeatherService(WebClient.Builder webClientBuilder,
                               @Value("${openweather.api.url}") String apiUrl,
                               @Value("${openweather.api.key}") String apiKey,
                               @Value("${openweather.api.units}") String units,
-                              @Value("${openweather.api.lang}") String lang) {
+                              @Value("${openweather.api.lang}") String lang, ComuneService comuneService) {
+        this.comuneService = comuneService;
         this.webClient = webClientBuilder.baseUrl(apiUrl).build();
         this.apiKey = apiKey;
         this.units = units;
@@ -30,11 +33,13 @@ public class OpenWeatherService {
     }
 
 
-    public OpenWeatherDto getWeatherByCity(String city) {
+    public OpenWeatherDto getWeatherByCity(String citta) {
         try {
+            ComuneDto comuneDto = comuneService.getCitta(citta);
             String json = webClient.get()
                     .uri(uriBuilder -> uriBuilder
-                            .queryParam("q", city)
+                            .queryParam("lat", comuneDto.getLat())
+                            .queryParam("lon", comuneDto.getLon())
                             .queryParam("appid", apiKey)
                             .queryParam("units", units)
                             .queryParam("lang", lang)
